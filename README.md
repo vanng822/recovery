@@ -15,10 +15,10 @@ import (
 
 func main() {
 	seefor := r2router.NewSeeforRouter()
-	options := recovery.NewRecoveryOptions()
+	options := recovery.NewOptions()
 	//options.Logger = CustomizeLogger() customized logger
 	//options.PrintStack = true printing stacktrace
-	seefor.Before(recovery.NewRecovery(options))
+	seefor.Before(recovery.Middleware(options))
 	
 	http.ListenAndServe(":8080", seefor)
 }

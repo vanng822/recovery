@@ -12,7 +12,7 @@ type Logger interface {
 	Printf(format string, v ...interface{})
 }
 
-type RecoveryOptions struct {
+type Options struct {
 	Logger     Logger
 	StackAll   bool
 	StackSize  int
@@ -20,8 +20,8 @@ type RecoveryOptions struct {
 }
 
 type Recovery struct {
-	options *RecoveryOptions
-	next http.Handler
+	options *Options
+	next    http.Handler
 }
 
 func (rec *Recovery) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -44,8 +44,8 @@ func (rec *Recovery) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	rec.next.ServeHTTP(w, req)
 }
 
-func NewRecoveryOptions() *RecoveryOptions {
-	return &RecoveryOptions{
+func NewOptions() *Options {
+	return &Options{
 		Logger:     log.New(os.Stdout, "[error] ", 0),
 		StackAll:   false,
 		StackSize:  1024 * 8,
@@ -53,15 +53,18 @@ func NewRecoveryOptions() *RecoveryOptions {
 	}
 }
 
-func NewRecovery(options *RecoveryOptions) func(next http.Handler) http.Handler {
+func NewRecovery(options *Options, next http.Handler) *Recovery {
 	if options == nil {
-		options = NewRecoveryOptions()
+		options = NewOptions()
 	}
+	return &Recovery{
+		options: options,
+		next:    next,
+	}
+}
+
+func Middleware(options *Options) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
-		rec := &Recovery{
-			options: options,
-			next: next,
-		}
-		return rec
+		return NewRecovery(options, next)
 	}
 }
