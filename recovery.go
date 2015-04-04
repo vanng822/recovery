@@ -1,4 +1,4 @@
-package r2router
+package recovery
 
 import (
 	"fmt"
