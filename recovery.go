@@ -13,9 +13,9 @@
 //		rec := recovery.NewRecovery()
 //		rec.PrintStack = true
 //		seefor.Before(rec.Handler)
-//		seefor.Before(r2router.WrapBeforeHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//		seefor.Get("/user/keys/:id", func(w http.ResponseWriter, r *http.Request, _ r2router.Params) {
 //			panic("Middleware panic")
-//		})))
+//		})
 //
 //		http.ListenAndServe(":8080", seefor)
 //	}
