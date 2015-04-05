@@ -12,6 +12,7 @@ env:
 install:
   - go get github.com/stretchr/testify/assert
   - go get github.com/vanng822/r2router
+  - go get github.com/codegangsta/negroni
 
 script:
   - go test -v
