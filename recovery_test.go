@@ -3,6 +3,7 @@ package recovery
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/vanng822/r2router"
+	"github.com/codegangsta/negroni"
 	//"fmt"
 	"io/ioutil"
 	"net/http"
@@ -12,7 +13,8 @@ import (
 
 func TestSeeforRecovery(t *testing.T) {
 	router := r2router.NewSeeforRouter()
-	router.Before(Middleware(nil))
+	rec := NewRecovery()
+	router.Before(rec.Handler)
 
 	router.Get("/user/keys/:id", func(w http.ResponseWriter, r *http.Request, p r2router.Params) {
 		panic("This shouldn't crash Seefor")
@@ -33,10 +35,9 @@ func TestSeeforRecovery(t *testing.T) {
 
 func TestSeeforRecoveryMiddlewarePanic(t *testing.T) {
 	router := r2router.NewSeeforRouter()
-	options := NewOptions()
-	options.PrintStack = true
-	rec := Middleware(options)
-	router.Before(rec)
+	rec := NewRecovery()
+	rec.PrintStack = true
+	router.Before(rec.Handler)
 
 	router.Get("/user/keys/:id", func(w http.ResponseWriter, r *http.Request, p r2router.Params) {
 		panic("This shouldn't crash Seefor")
@@ -61,17 +62,17 @@ func TestSeeforRecoveryMiddlewarePanic(t *testing.T) {
 }
 
 func TestSeeforRecoveryPrintStack(t *testing.T) {
-	router := r2router.NewSeeforRouter()
-	options := NewOptions()
-	options.PrintStack = true
-	rec := Middleware(options)
-	router.Before(rec)
-
+	router := r2router.NewRouter()
+	n := negroni.New()
+	rec := NewRecovery()
+	rec.PrintStack = true
+	n.UseFunc(rec.HandlerFuncWithNext)
+	
 	router.Get("/user/keys/:id", func(w http.ResponseWriter, r *http.Request, p r2router.Params) {
 		panic("This shouldn't crash Seefor")
 	})
-
-	ts := httptest.NewServer(router)
+	n.UseHandler(router)
+	ts := httptest.NewServer(n)
 	defer ts.Close()
 
 	// get
