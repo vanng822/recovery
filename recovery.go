@@ -38,7 +38,7 @@ func (rec *Recovery) recovery(w http.ResponseWriter) {
 
 func NewRecovery() *Recovery {
 	return &Recovery{
-		Logger:     log.New(os.Stdout, "[error] ", 0),
+		Logger:     log.New(os.Stderr, "[error] ", 0),
 		StackAll:   false,
 		StackSize:  1024 * 8,
 		PrintStack: false,
