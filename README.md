@@ -1,6 +1,6 @@
 ## Recovery
 
-Recovery is a middleware with implementing func(next http.Handler) http.Handler
+Recovery is a middleware for recovering from panic with interfaces func(next http.Handler) http.Handler and func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
 
 ## Example
 
